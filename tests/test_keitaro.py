@@ -97,3 +97,42 @@ def test_get_campaigns_invalid_structure() -> None:
                 await client.get_campaigns()
 
     asyncio.run(run())
+
+@pytest.mark.parametrize(
+    ("endpoint", "method_name"),
+    [
+        ("domains", "get_domains"),
+        ("offers", "get_offers"),
+        ("traffic_sources", "get_traffic_sources"),
+    ],
+)
+def test_get_resources(
+    endpoint: str,
+    method_name: str,
+) -> None:
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "GET"
+        assert request.url.path == (
+            f"/admin_api/v1/{endpoint}"
+        )
+
+        return httpx.Response(
+            200,
+            json=[{"id": 1, "name": "Test resource"}],
+        )
+
+    async def run() -> None:
+        async with KeitaroClient(
+            API_URL,
+            "test-key",
+            transport=httpx.MockTransport(handler),
+        ) as client:
+            method = getattr(client, method_name)
+            result = await method()
+
+        assert result == [
+            {"id": 1, "name": "Test resource"}
+        ]
+
+    asyncio.run(run())

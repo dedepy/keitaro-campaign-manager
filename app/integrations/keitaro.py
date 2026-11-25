@@ -77,14 +77,40 @@ class KeitaroClient:
                 "Keitaro returned invalid JSON"
             ) from exc
 
-    async def get_campaigns(self) -> list[dict[str, Any]]:
-        data = await self.request("GET", "campaigns")
+
+    async def _get_collection(
+        self,
+        endpoint: str,
+        resource_name: str,
+    ) -> list[dict[str, Any]]:
+        data = await self.request("GET", endpoint)
 
         if not isinstance(data, list) or not all(
             isinstance(item, dict) for item in data
         ):
             raise KeitaroError(
-                "Unexpected campaigns response format"
+                f"Unexpected {resource_name} response format"
             )
 
         return data
+
+    async def get_campaigns(self) -> list[dict[str, Any]]:
+        return await self._get_collection(
+            "campaigns", "campaigns"
+        )
+
+    async def get_domains(self) -> list[dict[str, Any]]:
+        return await self._get_collection(
+            "domains", "domains"
+        )
+
+    async def get_offers(self) -> list[dict[str, Any]]:
+        return await self._get_collection(
+            "offers", "offers"
+        )
+
+    async def get_traffic_sources(self) -> list[dict[str, Any]]:
+        return await self._get_collection(
+            "traffic_sources", "traffic sources"
+        )
+
