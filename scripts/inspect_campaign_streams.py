@@ -8,7 +8,7 @@ from app.integrations.keitaro import (
 )
 
 
-CAMPAIGN_ID = 269
+CAMPAIGN_ID = 278
 
 
 async def main() -> None:

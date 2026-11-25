@@ -1,4 +1,4 @@
-
+from typing import Literal
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -35,3 +35,10 @@ class CampaignCreateRequest(BaseModel):
             return value.strip().upper()
 
         return value
+
+class CampaignCreateResponse(BaseModel):
+    campaign_id: PositiveInt
+    google_stream_id: PositiveInt
+    offer_stream_id: PositiveInt
+    domain_id: PositiveInt
+    state: Literal["disabled"]

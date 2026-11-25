@@ -8,6 +8,9 @@ from app.integrations.keitaro import (
 from app.schemas.campaign import CampaignCreateRequest
 
 
+class CampaignAlreadyExistsError(ValueError):
+    """Campaign name or alias is already in use."""
+
 class CampaignSetupError(Exception):
     def __init__(self, campaign_id: int) -> None:
         self.campaign_id = campaign_id
@@ -108,7 +111,7 @@ class CampaignService:
             or item.get("alias") == data.name
             for item in campaigns
         ):
-            raise ValueError("Campaign already exists")
+            raise CampaignAlreadyExistsError("Campaign already exists")
 
         # Step 3: Create a disabled campaign.
         campaign_payload = {

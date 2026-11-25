@@ -303,3 +303,47 @@ def test_create_default_offer_stream() -> None:
         assert stream["offers"][0]["share"] == 100
 
     asyncio.run(run())
+
+def test_update_stream_offers() -> None:
+    import json
+
+    offers = [
+        {
+            "offer_id": 18004,
+            "share": 50,
+            "state": "active",
+        },
+        {
+            "offer_id": 18005,
+            "share": 50,
+            "state": "active",
+        },
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.method == "PUT"
+        assert request.url.path == "/admin_api/v1/streams/535"
+        assert json.loads(request.content) == {
+            "offers": offers
+        }
+
+        return httpx.Response(
+            200,
+            json={"id": 535, "offers": offers},
+        )
+
+    async def run() -> None:
+        async with KeitaroClient(
+            API_URL,
+            "test-key",
+            transport=httpx.MockTransport(handler),
+        ) as client:
+            result = await client.update_stream_offers(
+                535,
+                offers,
+            )
+
+        assert result["id"] == 535
+        assert len(result["offers"]) == 2
+
+    asyncio.run(run())

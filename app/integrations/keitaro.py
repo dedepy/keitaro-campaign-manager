@@ -214,3 +214,34 @@ class KeitaroClient:
 
         return data
 
+    async def update_stream_offers(
+        self,
+        stream_id: int,
+        offers: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        if stream_id <= 0:
+            raise ValueError("Stream ID must be positive")
+
+        if not offers:
+            raise ValueError(
+                "Stream must contain at least one offer"
+            )
+
+        data = await self.request(
+            method="PUT",
+            endpoint=f"streams/{stream_id}",
+            payload={"offers": offers},
+        )
+
+        if not isinstance(data, dict):
+            raise KeitaroError(
+                "Unexpected stream update response"
+            )
+
+        if data.get("id") != stream_id:
+            raise KeitaroError(
+                "Updated stream ID does not match"
+            )
+
+        return data
+
