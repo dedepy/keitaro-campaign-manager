@@ -23,3 +23,6 @@ __pycache__/
 # Operating systems
 .DS_Store
 Thumbs.db
+*.egg-info/
+build/
+dist/
